@@ -1,9 +1,6 @@
-import random
-import time
 import cmd
-
-random.seed(int(time.time()))
-queue = True
+import diceRoller
+import initiativeTracker as tracker
 
 class adventureShell(cmd.Cmd):
     intro = """
@@ -17,7 +14,7 @@ class adventureShell(cmd.Cmd):
 |_   _|___ ___| | |_ ___ _ _           
   | | | . | . | | . | . |_'_|          
   |_| |___|___|_|___|___|_,_|   
-  
+
 +++++++++++++++++++++++++++++++++++++++
 Type 'help' or ? for a list of commands.
 """
@@ -25,7 +22,34 @@ Type 'help' or ? for a list of commands.
     file = None
 
     def do_roll(self, arg):
-        print(arg)
+        """Rolls Dice and does simple math. | roll (2d20 + 5d6) * 2"""
+        if arg.find("#") >= 0:
+            arg = arg[:arg.find("#")]
+        diceRoller.regexRollStr(arg)
+    
+    def do_initAdd(self, arg):
+        """Adds an entry to the tracker. | initAdd <Name> <Roll> <T>"""
+        tracker.addInit(arg)
+    
+    def do_initSort(self, arg):
+        """Sorts the list for play."""
+        tracker.fixOrder()
+    
+    def do_initNext(self, arg):
+        """Moves 1 to the bottom."""
+        tracker.nextInit()
+
+    def do_initClear(self, arg):
+        """Clears all temporary flagged entries."""
+        tracker.clearInit()
+
+    def do_initRemove(self, arg):
+        """Removes an entry based on current order."""
+        tracker.removeInit(int(arg))
+    
+    def do_init(self, arg):
+        """Print order."""
+        tracker.writeToConsole()
 
 
 adventureShell().cmdloop()
